@@ -1,0 +1,34 @@
+# --- 用户数据 ---
+core/store/data/
+core/log/log/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- 测试临时数据 ---
+ClaudeWorkSpace/_tmp/
+ClaudeWorkSpace/.playwright-mcp/
+
+# --- 环境变量（敏感信息） ---
+.env
+.env.local
+.env.*.local
+
+# --- 操作系统 ---
+.DS_Store
+Thumbs.db
+
+# --- 生成的临时策略文件夹 ---
+core/pipeline/strategies/calculus/FlowExercise/

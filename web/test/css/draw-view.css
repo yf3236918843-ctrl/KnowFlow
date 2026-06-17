@@ -1,0 +1,236 @@
+.draw-view {
+  height: 100%;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(95, 118, 214, 0.12), transparent 26%),
+    rgba(4, 5, 9, 0.98);
+}
+
+.draw-stage {
+  position: relative;
+  height: 100%;
+  padding: 18px 18px 20px;
+}
+
+.draw-question {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.draw-qn-wrap {
+  width: min(860px, calc(100vw - 160px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.draw-nav-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 12, 18, 0.82);
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.draw-nav-btn:hover:not(:disabled) {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(14, 16, 24, 0.94);
+}
+
+.draw-nav-btn:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.draw-qn-card {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.008)),
+    rgba(9, 10, 16, 0.88);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
+  text-align: center;
+}
+
+.draw-qn-meta {
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.draw-qn-text {
+  font-size: 13px;
+  line-height: 1.38;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.draw-qn-text .katex {
+  font-size: calc(var(--katex-size) * 1.08);
+}
+
+.draw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: min(100%, 920px);
+  padding: 6px 0;
+}
+
+.draw-tool,
+.draw-action {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.draw-tool {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.draw-tool:hover,
+.draw-action:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.draw-tool.active {
+  color: #dce4ff;
+  border-color: rgba(95, 118, 214, 0.34);
+  background: rgba(95, 118, 214, 0.16);
+}
+
+.draw-action {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.draw-action:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.draw-action.primary {
+  background: rgba(95, 118, 214, 0.18);
+  border-color: rgba(95, 118, 214, 0.28);
+  color: #e8edff;
+}
+
+.draw-action.danger:hover {
+  color: #ef9f97;
+  background: rgba(212, 102, 90, 0.12);
+}
+
+.draw-sep {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.draw-colors {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.draw-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.draw-color:hover {
+  transform: scale(1.12);
+}
+
+.draw-color.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.32);
+}
+
+.draw-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.draw-size {
+  width: 86px;
+}
+
+.draw-size-label {
+  min-width: 18px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.draw-canvas-wrap {
+  height: 100%;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,0.02), transparent 40%),
+    #0a0b10;
+  overflow: hidden;
+}
+
+.draw-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+@media (max-width: 900px) {
+  .draw-stage {
+    padding: 14px;
+  }
+
+  .draw-question {
+    top: 14px;
+    left: 14px;
+    right: 14px;
+  }
+
+  .draw-qn-wrap {
+    width: 100%;
+  }
+
+  .draw-toolbar {
+    justify-content: center;
+  }
+}

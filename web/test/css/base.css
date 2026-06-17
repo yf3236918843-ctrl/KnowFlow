@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════════
+   base.css — 设计令牌 + Reset + 布局 + 通用动画
+   source: main.html
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg-deep: #020203;
+  --bg-base: #050506;
+  --bg-elevated: #0e0e14;
+  --bg-surface: rgba(255,255,255,0.06);
+  --bg-surface-hover: rgba(255,255,255,0.10);
+  --bg-card: #111116;
+  --accent: #5E6AD2;
+  --accent-bright: #6872D9;
+  --accent-glow: rgba(94,106,210,0.25);
+  --accent-soft: rgba(94,106,210,0.10);
+  --text-primary: #EDEDEF;
+  --text-secondary: #C8CCD4;
+  --text-muted: rgba(255,255,255,0.50);
+  --border-default: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.14);
+  --border-accent: rgba(94,106,210,0.30);
+  --error: #d4665a;
+  --success: #5a9b6a;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --sidebar-w: 240px;
+  --sidebar-collapsed-w: 0px;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: var(--font-sans); background: var(--bg-base); color: var(--text-primary); -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* ── 隐藏滚动条 ── */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+/* ── 背景层 ── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 30%, rgba(94,106,210,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 70%, rgba(94,106,210,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 40% at 50% 0%, #0a0a0f 0%, var(--bg-base) 60%, var(--bg-deep) 100%);
+  pointer-events: none;
+}
+.bg-layer::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* ── 布局（Grid 骨架） ── */
+.app {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 48px 1fr;
+  height: 100%;
+}
+
+/* 侧栏跨两行（全高） */
+.sidebar {
+  grid-row: 1 / 3;
+}
+
+/* 标题栏在第一行第二列 */
+.context-bar {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+/* 功能区在第二行第二列 */
+.content-area {
+  grid-row: 2;
+  grid-column: 2;
+  display: flex; flex-direction: column;
+  min-height: 0;
+  background: #0a0a10;
+}
+
+/* ── KaTeX 大小（变量驱动，各组件按需缩放） ── */
+:root { --katex-size: 1.5em; }
+.katex { font-size: var(--katex-size); }
+.katex-display { font-size: calc(var(--katex-size) * 1.1); }
+
+/* ── KaTeX 交互反馈 ── */
+.katex, .katex-display {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+.katex:hover, .katex-display:hover {
+  background: rgba(94,106,210,0.08);
+  box-shadow: 0 0 0 1.5px rgba(94,106,210,0.2);
+}
+.katex:active, .katex-display:active {
+  background: rgba(94,106,210,0.15);
+  box-shadow: 0 0 0 1.5px rgba(94,106,210,0.35);
+  transform: scale(0.97);
+}
+
+/* ── 全局按钮默认样式 ── */
+button {
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+button svg { display: block; }
+/* hover 发光边框（opt-out: .no-glow） */
+button:not(.no-glow):hover {
+  box-shadow: 0 0 0 1.5px var(--border-hover), 0 0 6px var(--accent-glow);
+}
+/* focus / active 强发光 */
+button:not(.no-glow):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent), 0 0 12px var(--accent-glow);
+  border-color: var(--accent);
+}
+button:not(.no-glow):active {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 16px var(--accent-glow);
+}
+/* 持久的"被选中"发光状态 */
+.btn-glow {
+  box-shadow: 0 0 0 2px var(--accent), 0 0 12px var(--accent-glow) !important;
+}
+
+/* ── 通用动画 ── */
+@keyframes slide-in { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ie-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes panel-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes dot-b { from { opacity: 0.3; transform: translateY(0); } to { opacity: 1; transform: translateY(-3px); } }

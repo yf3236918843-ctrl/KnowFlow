@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简学 · 登录</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<script src="../api/client.js"></script>
+<style>
+  body {
+    overflow: auto;
+    min-height: 100vh;
+  }
+
+  .login-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    width: min(920px, 100%);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 28px;
+    overflow: hidden;
+    background: rgba(8, 8, 14, 0.86);
+    box-shadow: 0 34px 90px rgba(0,0,0,0.38);
+    backdrop-filter: blur(12px);
+  }
+
+  .login-hero {
+    padding: 42px 38px;
+    background:
+      radial-gradient(circle at top left, rgba(94,106,210,0.34), transparent 38%),
+      radial-gradient(circle at 75% 25%, rgba(255,255,255,0.08), transparent 20%),
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    position: relative;
+  }
+
+  .login-hero::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 24px;
+    pointer-events: none;
+  }
+
+  .login-kicker {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.58);
+    margin-bottom: 12px;
+  }
+
+  .login-title {
+    font-size: 42px;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    font-weight: 800;
+    max-width: 420px;
+  }
+
+  .login-copy {
+    margin-top: 18px;
+    max-width: 430px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .login-points {
+    margin-top: 28px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .login-point {
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .login-point strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .login-point span {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .login-panel {
+    padding: 34px 30px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  }
+
+  .login-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 22px;
+  }
+
+  .login-tab {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 16px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .login-tab.active {
+    background: linear-gradient(135deg, var(--accent), #7b6fd8);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(94,106,210,0.24);
+  }
+
+  .login-form {
+    display: grid;
+    gap: 14px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .login-help {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+    margin-top: -2px;
+    margin-bottom: 6px;
+  }
+
+  .login-field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .login-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .login-field input {
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    color: var(--text-primary);
+    padding: 13px 14px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+  }
+
+  .login-field input:focus {
+    outline: none;
+    border-color: rgba(94,106,210,0.52);
+    box-shadow: 0 0 0 3px rgba(94,106,210,0.16);
+  }
+
+  .login-submit {
+    margin-top: 6px;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--accent), #7b6fd8);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    box-shadow: 0 14px 28px rgba(94,106,210,0.28);
+  }
+
+  .login-submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: none;
+  }
+
+  .login-message {
+    min-height: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .login-message.error {
+    color: #ef9f97;
+  }
+
+  .login-message.success {
+    color: #92d0a1;
+  }
+
+  @media (max-width: 860px) {
+    .login-card {
+      grid-template-columns: 1fr;
+    }
+
+    .login-title {
+      font-size: 34px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="login-shell">
+  <div class="login-card">
+    <section class="login-hero">
+      <div class="login-kicker">PrivateTeacher / 简学</div>
+      <div class="login-title">私人教师系统</div>
+      <div class="login-copy">
+        一个真正懂你的老师
+      </div>
+      <div class="login-points">
+        <div class="login-point">
+          <strong>顺序做题</strong>
+          <span>刷题流</span>
+        </div>
+        <div class="login-point">
+          <strong>项目管理</strong>
+          <span>新建项目、题库、题组后将题目添加</span>
+        </div>
+        <div class="login-point">
+          <strong>后续目标</strong>
+          <span>让系统越来越懂用户，而不是只会生成一次性答案。</span>
+        </div>
+      </div>
+    </section>
+    <section class="login-panel">
+      <div class="login-tabs">
+        <button class="login-tab active" data-mode="login">登录</button>
+        <button class="login-tab" data-mode="register">注册</button>
+      </div>
+      <form class="login-form" id="authForm">
+        <h2 id="formTitle">进入简学</h2>
+        <div class="login-help" id="formHelp">使用手机号样式的账号名或任意字符串账号名登录。</div>
+        <div class="login-field">
+          <label for="accountInput">账号</label>
+          <input id="accountInput" name="account" autocomplete="username" placeholder="例如：test" />
+        </div>
+        <div class="login-field">
+          <label for="passwordInput">密码</label>
+          <input id="passwordInput" name="password" type="password" autocomplete="current-password" placeholder="不少于 4 位" />
+        </div>
+        <button class="login-submit" id="submitBtn" type="submit">登录并进入</button>
+        <div class="login-message" id="loginMessage"></div>
+      </form>
+    </section>
+  </div>
+</div>
+<script>
+  (function () {
+    'use strict';
+
+    var mode = 'login';
+    var form = document.getElementById('authForm');
+    var titleEl = document.getElementById('formTitle');
+    var helpEl = document.getElementById('formHelp');
+    var submitBtn = document.getElementById('submitBtn');
+    var messageEl = document.getElementById('loginMessage');
+    var accountEl = document.getElementById('accountInput');
+    var passwordEl = document.getElementById('passwordInput');
+
+    function setMessage(text, type) {
+      messageEl.textContent = text || '';
+      messageEl.className = 'login-message' + (type ? ' ' + type : '');
+    }
+
+    function renderMode() {
+      document.querySelectorAll('.login-tab').forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-mode') === mode);
+      });
+      if (mode === 'login') {
+        titleEl.textContent = '进入简学';
+        helpEl.textContent = '如果账号已存在，直接登录即可。';
+        submitBtn.textContent = '登录并进入';
+      } else {
+        titleEl.textContent = '创建测试账号';
+        helpEl.textContent = '注册成功后会直接进入主界面。';
+        submitBtn.textContent = '注册并进入';
+      }
+      setMessage('', '');
+    }
+
+    function redirectToMain() {
+      location.href = '/test/main.html';
+    }
+
+    document.querySelectorAll('.login-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        mode = tab.getAttribute('data-mode');
+        renderMode();
+      });
+    });
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      var account = accountEl.value.trim();
+      var password = passwordEl.value;
+      if (!account) {
+        setMessage('账号不能为空', 'error');
+        return;
+      }
+      if (!password || password.length < 4) {
+        setMessage('密码至少 4 位', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setMessage(mode === 'login' ? '正在登录...' : '正在注册...', '');
+
+      try {
+        var resp = await fetch(mode === 'login' ? '/api/auth/login' : '/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ account: account, password: password }),
+        });
+        var data = await resp.json();
+        if (!resp.ok || !data.ok) {
+          setMessage(data.error || '操作失败', 'error');
+          submitBtn.disabled = false;
+          return;
+        }
+        setMessage(mode === 'login' ? '登录成功，正在进入...' : '注册成功，正在进入...', 'success');
+        setTimeout(redirectToMain, 260);
+      } catch (err) {
+        setMessage('网络错误: ' + err.message, 'error');
+        submitBtn.disabled = false;
+      }
+    });
+
+    api.me().then(function (data) {
+      if (data && data.ok) {
+        redirectToMain();
+      }
+    });
+
+    renderMode();
+  })();
+</script>
+</body>
+</html>

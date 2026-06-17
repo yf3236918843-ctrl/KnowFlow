@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简学 · 组件展示</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/chat.css">
+<link rel="stylesheet" href="css/input.css">
+<link rel="stylesheet" href="css/qbar.css">
+<link rel="stylesheet" href="css/cards.css">
+<link rel="stylesheet" href="css/panel.css">
+<link rel="stylesheet" href="css/overlays.css">
+<style>
+/* ── 测试页辅助样式 ── */
+body { overflow: auto; }
+.demo-wrap {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 40px 24px;
+}
+.demo-section {
+  margin-bottom: 48px;
+}
+.demo-section h2 {
+  font-size: 13px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-default);
+}
+.demo-grid {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start;
+}
+.demo-label {
+  font-size: 11px; color: var(--text-muted);
+  margin-bottom: 6px; font-weight: 500;
+}
+.demo-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<div class="demo-wrap">
+
+<h1 style="font-size:24px;font-weight:700;margin-bottom:8px;">组件展示 · 简学</h1>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:40px;">main.html 全部视觉组件拆分解耦展示</p>
+
+<!-- ════════════════ 侧栏 ════════════════ -->
+<section class="demo-section">
+<h2>① 侧栏</h2>
+<div style="display:flex;gap:24px;">
+
+  <!-- 完整侧栏 -->
+  <div class="sidebar" style="position:relative;animation:none;width:240px;min-width:240px;height:auto;max-height:600px;">
+    <div class="sidebar-brand">
+      <div class="user-avatar">张</div>
+      <div class="user-name">张三</div>
+      <div style="flex:1;min-width:0"></div>
+      <button class="sb-btn" title="新建对话">+</button>
+    </div>
+    <div class="sidebar-tabs">
+      <button class="sidebar-tab active" data-view="sessions">会话</button>
+      <button class="sidebar-tab" data-view="functions">功能</button>
+    </div>
+    <div class="sidebar-body">
+      <div class="sidebar-view active">
+        <div class="session-list">
+          <div class="session-item active"><span class="s-dot"></span><span class="s-title">高等数学 · 极限</span></div>
+          <div class="session-item"><span class="s-dot"></span><span class="s-title">导数复习</span></div>
+          <div class="session-item"><span class="s-dot"></span><span class="s-title">答疑：洛必达法则</span></div>
+          <div class="session-item"><span class="s-dot"></span><span class="s-title">不定积分专项</span></div>
+        </div>
+      </div>
+      <div class="sidebar-view">
+        <div class="func-list">
+          <div class="func-item">
+            <div class="f-icon">🔧</div>
+            <div class="f-info"><div class="f-title">项目管理</div><div class="f-desc">管理项目、题库与题目</div></div>
+          </div>
+          <div class="func-item">
+            <div class="f-icon">🧠</div>
+            <div class="f-info"><div class="f-title">偏好管理</div><div class="f-desc">查看和管理学习偏好</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 折叠状态 -->
+  <div class="sidebar collapsed" style="position:relative;animation:none;background:var(--bg-card);">
+    <div class="sidebar-brand" style="visibility:hidden;height:58px;"></div>
+  </div>
+  <span style="font-size:11px;color:var(--text-muted);padding-top:12px;">← collapsed</span>
+</div>
+</section>
+
+<!-- ════════════════ 上下文栏 ════════════════ -->
+<section class="demo-section">
+<h2>② 上下文栏 Context Bar</h2>
+<div class="context-bar" style="position:relative;animation:none;border-radius:var(--radius-md);">
+  <button class="sb-btn" style="width:28px;height:28px;font-size:14px;margin-left:-8px;">☰</button>
+  <span class="crumb current">高等数学</span>
+  <span class="crumb-sep">▶</span>
+  <span class="crumb">同济高数上册</span>
+  <span class="crumb-sep">▶</span>
+  <span class="crumb">第一章 极限</span>
+  <div class="ctx-spacer"></div>
+  <button class="mode-badge">顺序做题</button>
+</div>
+
+<div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+  <span class="demo-label">mode-badge 变体：</span>
+  <button class="mode-badge">顺序做题</button>
+  <button class="mode-badge" style="background:rgba(201,168,124,0.15);color:#c9a87c;border-color:rgba(201,168,124,0.3);">待复习</button>
+  <button class="mode-badge" style="background:rgba(212,102,90,0.15);color:#d4665a;border-color:rgba(212,102,90,0.3);">测试</button>
+</div>
+</section>
+
+<!-- ════════════════ 欢迎页 + 快捷按钮 ════════════════ -->
+<section class="demo-section">
+<h2>③ 欢迎页 + 快捷按钮</h2>
+<div class="welcome" style="border:1px solid var(--border-default);border-radius:var(--radius-lg);">
+  <h2>开始学习</h2>
+  <p>选择功能开始，或在下方输入问题直接与 AI 对话</p>
+  <div class="shortcuts">
+    <button class="shortcut-btn">顺序做题</button>
+    <button class="shortcut-btn">复习</button>
+    <button class="shortcut-btn">测试</button>
+    <button class="shortcut-btn">项目管理</button>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 按钮合集 ════════════════ -->
+<section class="demo-section">
+<h2>④ 按钮合集</h2>
+
+<div style="display:flex;flex-direction:column;gap:16px;">
+  <div>
+    <div class="demo-label">Action Buttons</div>
+    <div class="demo-grid">
+      <button class="action-btn" style="display:inline-flex;">普通动作</button>
+      <button class="action-btn primary" style="display:inline-flex;">主要动作</button>
+      <button class="action-btn" style="display:inline-flex;" disabled>禁用</button>
+    </div>
+  </div>
+  <div>
+    <div class="demo-label">Draw Buttons</div>
+    <div class="demo-grid">
+      <button class="draw-btn">取消</button>
+      <button class="draw-btn draw-insert">确认插入</button>
+      <button class="draw-btn" disabled>禁用</button>
+    </div>
+  </div>
+  <div>
+    <div class="demo-label">Shortcut Buttons (welcome)</div>
+    <div class="demo-grid">
+      <button class="shortcut-btn">顺序做题</button>
+      <button class="shortcut-btn">复习</button>
+    </div>
+  </div>
+  <div>
+    <div class="demo-label">SB Buttons</div>
+    <div class="demo-grid">
+      <button class="sb-btn">+</button>
+      <button class="sb-btn" style="font-size:14px;width:28px;height:28px;">☰</button>
+    </div>
+  </div>
+  <div>
+    <div class="demo-label">Input Buttons (圆形)</div>
+    <div class="demo-grid">
+      <button class="input-btn btn-send">➤</button>
+      <button class="input-btn btn-stop">■</button>
+    </div>
+  </div>
+  <div>
+    <div class="demo-label">QB Nav Buttons</div>
+    <div class="demo-grid">
+      <button class="qb-nav-btn">‹</button>
+      <button class="qb-nav-btn">›</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 对话框气泡 ════════════════ -->
+<section class="demo-section">
+<h2>⑤ 聊天气泡</h2>
+<div class="messages" style="max-width:720px;">
+  <!-- 用户 -->
+  <div class="msg user">
+    <div class="msg-bubble">你好，请问 $\lim_{x \to 0} \frac{\sin x}{x}$ 怎么计算？</div>
+  </div>
+  <!-- AI -->
+  <div class="msg ai">
+    <div class="msg-bubble">这道题考察的是 **重要极限** 的概念。
+
+$$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
+
+这是一个基础但非常重要的结论。你能想到从哪个角度入手吗？</div>
+  </div>
+  <!-- 系统 -->
+  <div class="msg system">
+    <div class="msg-bubble">开始做题...</div>
+  </div>
+  <!-- 思考过程 -->
+  <div class="msg ai">
+    <div class="think-toggle">💭 推理过程</div>
+    <div class="think-box">
+      <div class="think-content">分析题目要求：需要计算极限值，这是典型的 0/0 型未定式。
+回顾洛必达法则适用条件：分子分母在极限点处同时趋于 0，且导数存在。</div>
+    </div>
+  </div>
+  <!-- 题目引用 -->
+  <div class="msg system">
+    <div class="msg-bubble exercise-quote">
+      <div style="font-weight:600;color:var(--accent);margin-bottom:4px;">📖 1.1.3</div>
+      计算极限 $\lim_{x \to 0} \frac{1 - \cos x}{x^2}$
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 输入栏 + 扩展菜单 ════════════════ -->
+<section class="demo-section">
+<h2>⑥ 输入栏 + 扩展菜单</h2>
+<div style="border:1px solid var(--border-default);border-radius:var(--radius-lg);overflow:hidden;max-width:720px;">
+  <div class="attach-bar open" style="display:flex;">
+    <div class="attach-list">
+      <div class="attach-item">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect width='72' height='72' fill='%23222'/%3E%3Ctext x='36' y='40' text-anchor='middle' fill='%23666' font-size='10'%3EIMG%3C/text%3E%3C/svg%3E">
+        <span class="attach-index">1</span>
+        <span class="attach-del">✕</span>
+      </div>
+      <div class="attach-item">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect width='72' height='72' fill='%23222'/%3E%3Ctext x='36' y='40' text-anchor='middle' fill='%23666' font-size='10'%3EIMG%3C/text%3E%3C/svg%3E">
+        <span class="attach-index">2</span>
+        <span class="attach-del">✕</span>
+      </div>
+      <div class="attach-item">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Crect width='72' height='72' fill='%23222'/%3E%3Ctext x='36' y='40' text-anchor='middle' fill='%23666' font-size='10'%3EIMG%3C/text%3E%3C/svg%3E">
+        <span class="attach-index">3</span>
+        <span class="attach-del">✕</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area" style="position:relative;">
+    <div class="input-extras">
+      <button class="ie-trigger">⊕</button>
+      <!-- 展开状态 -->
+      <div class="ie-menu open" style="display:block;position:absolute;bottom:calc(100% + 8px);left:0;z-index:10;">
+        <div class="ie-grid">
+          <button class="ie-item"><span class="ie-icon">📊</span><span class="ie-label">总结</span></button>
+          <button class="ie-item"><span class="ie-icon">📝</span><span class="ie-label">收录</span></button>
+          <button class="ie-item"><span class="ie-icon">✏️</span><span class="ie-label">画图</span></button>
+          <button class="ie-item"><span class="ie-icon">📷</span><span class="ie-label">拍照</span></button>
+          <button class="ie-item"><span class="ie-icon">🎤</span><span class="ie-label">语音</span></button>
+        </div>
+      </div>
+    </div>
+    <button class="action-btn" style="display:inline-flex;">收录</button>
+    <button class="action-btn primary" style="display:inline-flex;">总结</button>
+    <textarea rows="1" placeholder="输入问题，回车发送"></textarea>
+    <button class="input-btn btn-send">➤</button>
+    <button class="input-btn btn-stop" style="display:none;">■</button>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 题目栏 Question Bar ════════════════ -->
+<section class="demo-section">
+<h2>⑦ 题目栏</h2>
+<div style="max-width:720px;">
+  <div class="question-bar">
+    <div class="qb-container">
+      <div class="qb-header" onclick="var b=this.nextElementSibling;b.classList.toggle('open');this.querySelector('.qb-toggle').classList.toggle('open')">
+        <span class="qb-icon">📖</span>
+        <span class="qb-label">极限</span>
+        <span class="qb-preview">计算极限 $\lim_{x \to 0} \frac{1 - \cos x}{x^2}$...</span>
+        <span class="qb-counter">1/5</span>
+        <span class="qb-toggle">▼</span>
+      </div>
+      <div class="qb-body">
+        <div class="qb-content">计算极限 $\lim_{x \to 0} \frac{1 - \cos x}{x^2}$</div>
+        <div class="qb-footer">
+          <button class="qb-nav-btn">‹</button>
+          <span class="qb-dots">● ○ ○ ○ ○</span>
+          <button class="qb-nav-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 卡片合集 ════════════════ -->
+<section class="demo-section">
+<h2>⑧ 卡片</h2>
+
+<div style="display:flex;flex-direction:column;gap:12px;max-width:500px;">
+  <!-- Draft Card -->
+  <div class="draft-card">
+    <div class="draft-title">📝 薄弱点收录草稿</div>
+    <div class="draft-item">
+      <div>等价无穷小代换不熟练</div>
+      <div class="d-mastery-bar" style="background:var(--border-default);">
+        <div style="height:100%;width:30%;background:#d4665a;border-radius:2px;"></div>
+      </div>
+      <div class="d-type">知识缺口</div>
+    </div>
+    <div class="draft-item">
+      <div>洛必达法则适用条件判断不准确</div>
+      <div class="d-mastery-bar" style="background:var(--border-default);">
+        <div style="height:100%;width:45%;background:#c9a87c;border-radius:2px;"></div>
+      </div>
+      <div class="d-type">概念模糊</div>
+    </div>
+    <div class="draft-btns">
+      <button class="draw-btn">补充反馈</button>
+      <button class="draw-btn draw-insert">确认收录</button>
+    </div>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="summary-card">
+    <div class="sc-header">
+      📊 学习总结
+      <span class="sc-arrow">▼</span>
+    </div>
+    <div class="sc-preview">学生对极限计算掌握良好，但对等价无穷小仍需加强练习...</div>
+    <div class="sc-body">
+      学生能够独立应用重要极限解决相关问题，但对等价无穷小的代换仍不够熟练。建议后续练习中增加变式训练。
+    </div>
+  </div>
+
+  <!-- Tool Call Card -->
+  <div class="tc-card">
+    <div class="tc-header">
+      <span class="tc-icon">🔧</span>
+      <span class="tc-name">get_answer</span>
+      <span class="tc-status done">✓ 完成</span>
+      <span class="tc-arrow">▼</span>
+    </div>
+    <div class="tc-body">
+      <div class="tc-section">
+        <div class="tc-section-title">传入参数</div>
+        <div class="tc-json">{"question_id": 42}</div>
+      </div>
+      <div class="tc-section">
+        <div class="tc-section-title">返回结果</div>
+        <div class="tc-json">{"answer": 1, "confidence": 0.95}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thinking Dots -->
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 0;">
+    <span style="font-size:13px;color:var(--text-muted);">AI 思考中</span>
+    <span class="thinking-dots"><span></span><span></span><span></span></span>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ Toast ════════════════ -->
+<section class="demo-section">
+<h2>⑨ Toast</h2>
+<div class="demo-grid">
+  <button class="draw-btn draw-insert" onclick="var t=document.querySelector('.toast-demo');t.style.display='';setTimeout(()=>t.style.display='none',2500)">显示 Toast</button>
+  <div class="toast toast-demo" style="position:relative;top:auto;left:auto;transform:none;display:none;">操作成功！</div>
+  <div class="toast" style="position:relative;top:auto;left:auto;transform:none;">Toast 样式参考</div>
+</div>
+</section>
+
+<!-- ════════════════ 右侧面板 ════════════════ -->
+<section class="demo-section">
+<h2>⑩ 右侧面板</h2>
+<div style="display:flex;gap:24px;">
+  <!-- 面板框架缩略 -->
+  <div class="panel" style="position:relative;display:flex;animation:none;width:360px;">
+    <div class="panel-header">
+      <button class="panel-back">←</button>
+      <span class="panel-title">项目管理</span>
+      <button class="panel-close">✕</button>
+    </div>
+    <div class="panel-body">
+      <!-- 项目树 -->
+      <div class="p-project">
+        <div class="p-project-header">
+          <div><div class="p-project-name">高等数学</div><div class="p-project-meta">2 题库 · 247 题 · 72%</div></div>
+          <span class="p-project-arrow">▶</span>
+        </div>
+      </div>
+      <div class="p-project open">
+        <div class="p-project-header">
+          <div><div class="p-project-name">线性代数</div><div class="p-project-meta">1 题库 · 134 题 · 45%</div></div>
+          <span class="p-project-arrow">▶</span>
+        </div>
+        <div class="p-project-banks" style="display:block;">
+          <div class="p-bank"><div class="p-bank-name">工程数学线代</div><span class="p-bank-action">管理</span></div>
+        </div>
+      </div>
+      <div class="p-project">
+        <div class="p-project-header">
+          <div><div class="p-project-name">概率论</div><div class="p-project-meta">1 题库 · 89 题 · 12%</div></div>
+          <span class="p-project-arrow">▶</span>
+        </div>
+      </div>
+
+      <button class="p-create-btn">+ 新建项目</button>
+
+      <hr style="border:none;border-top:1px solid var(--border-default);margin:20px 0;">
+
+      <!-- 题库卡片 -->
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;">题库详情示例</div>
+        <div class="bd-grid">
+          <div class="bd-card">
+            <div class="bd-icon">📥</div>
+            <div class="bd-label">导入题目</div>
+            <div class="bd-desc">拍照或上传图片提取题目</div>
+          </div>
+          <div class="bd-card">
+            <div class="bd-icon">📋</div>
+            <div class="bd-label">题目列表</div>
+            <div class="bd-desc">浏览、编辑和管理题目</div>
+          </div>
+          <div class="bd-card">
+            <div class="bd-icon">✏️</div>
+            <div class="bd-label">开始做题</div>
+            <div class="bd-desc">进入练习模式</div>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border-default);margin:20px 0;">
+
+      <!-- 题组导航 -->
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">题组导航示例</div>
+      <div class="grp-item">
+        <div class="grp-header">
+          <span class="grp-arrow open">▶</span>
+          <span class="grp-label">A 组</span>
+          <span class="grp-name">函数与极限</span>
+          <span class="grp-progress">3/3 · 100%</span>
+        </div>
+        <div class="grp-body open" style="display:flex;">
+          <span class="grp-q q-done">#1 极限计算</span>
+          <span class="grp-q q-done">#2 等价无穷小</span>
+          <span class="grp-q q-warn">#3 夹逼准则</span>
+        </div>
+      </div>
+      <div class="grp-item">
+        <div class="grp-header current">
+          <span class="grp-arrow">▶</span>
+          <span class="grp-label">B 组</span>
+          <span class="grp-name">导数</span>
+          <span class="grp-progress">1/4 · 25%</span>
+        </div>
+        <div class="grp-body">
+          <span class="grp-q q-cur">#4 导数定义</span>
+          <span class="grp-q q-pend">#5 基本求导</span>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border-default);margin:20px 0;">
+
+      <!-- 题目详情弹窗占位 -->
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">题目详情弹窗</div>
+      <button class="draw-btn" onclick="document.getElementById('qdDemo').classList.toggle('open')">切换题目详情弹窗</button>
+    </div>
+  </div>
+</div>
+
+<!-- qd 弹窗 -->
+<div class="qd-overlay open" id="qdDemo" style="position:relative;display:none;z-index:10;">
+  <div class="qd-modal" style="box-shadow:none;">
+    <div class="qd-head">
+      <span class="qd-title">题目详情</span>
+      <button class="qd-close" onclick="this.closest('.qd-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="qd-scroll">
+      <div class="qd-section">
+        <div class="qd-label">题目</div>
+        <div class="qd-content">计算极限 $\lim_{x \to 0} \frac{\sin x}{x}$</div>
+      </div>
+      <div class="qd-section">
+        <div class="qd-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="qd-meta"><div class="qd-label">状态</div><span style="font-weight:600;color:var(--success)">完全正确</span></div>
+          <div class="qd-meta"><div class="qd-label">得分</div><span style="font-weight:600">100%</span></div>
+        </div>
+        <div class="qd-meta" style="margin-bottom:6px"><div class="qd-label">你的答案</div><div class="qd-ans">1</div></div>
+        <div class="qd-meta" style="margin-bottom:6px"><div class="qd-label">正确答案</div><div class="qd-ans">1</div></div>
+        <div class="qd-meta"><div class="qd-label">反馈</div><div class="qd-ans">回答正确！掌握良好。</div></div>
+      </div>
+      <div id="qdPending" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 画图 + 标注 ════════════════ -->
+<section class="demo-section">
+<h2>⑪ 画图 + 标注</h2>
+<div style="display:flex;flex-direction:column;gap:16px;">
+  <!-- Draw Toolbar -->
+  <div class="draw-toolbar">
+    <div class="draw-actions">
+      <button class="draw-btn active">✏️ 笔</button>
+      <button class="draw-btn">🧹 擦</button>
+    </div>
+    <div class="draw-tools">
+      <div class="draw-colors">
+        <button class="draw-clr active" style="background:#ff6b6b"></button>
+        <button class="draw-clr" style="background:#ffd93d"></button>
+        <button class="draw-clr" style="background:#6bcb77"></button>
+        <button class="draw-clr" style="background:#4d96ff"></button>
+        <button class="draw-clr" style="background:#ffffff"></button>
+      </div>
+      <select class="draw-size"><option>细</option><option selected>中</option><option>粗</option></select>
+      <button class="draw-btn" style="margin-left:8px;">🗑 清空</button>
+    </div>
+  </div>
+
+  <!-- Annotation Overlay Toolbar -->
+  <div class="ann-toolbar" style="position:relative;border-radius:var(--radius-md);">
+    <button class="draw-btn">↩ 撤销</button>
+    <button class="draw-btn">🗑 清空</button>
+    <div class="draw-colors">
+      <button class="draw-clr active" style="background:#ff6b6b"></button>
+      <button class="draw-clr" style="background:#ffd93d"></button>
+      <button class="draw-clr" style="background:#6bcb77"></button>
+      <button class="draw-clr" style="background:#4d96ff"></button>
+      <button class="draw-clr" style="background:#ffffff"></button>
+    </div>
+    <select class="draw-size" style="margin-left:4px;"><option>细</option><option selected>中</option><option>粗</option></select>
+    <button class="draw-btn" style="margin-left:auto;border-color:var(--accent);color:var(--accent);">✓ 完成标注</button>
+    <button class="draw-btn">✕ 关闭</button>
+  </div>
+
+  <!-- Canvas placeholder -->
+  <div style="min-height:120px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-default);border-radius:var(--radius-md);background:#15151e;">
+    <span style="color:var(--text-muted);font-size:13px;">Canvas 区域</span>
+  </div>
+
+  <!-- Draw sidebar -->
+  <div style="display:flex;gap:12px;">
+    <div class="draw-sidebar" style="width:180px;">
+      <div class="draw-sidebar-title">画板</div>
+      <div class="draw-board-item active"><span class="db-name">画板 1</span><span class="db-del">✕</span></div>
+      <div class="draw-board-item"><span class="db-name">画板 2</span><span class="db-del">✕</span></div>
+      <div class="draw-board-item"><span class="db-name">画板 3</span><span class="db-del">✕</span></div>
+    </div>
+    <div class="draw-canvas" style="min-height:150px;display:flex;align-items:center;justify-content:center;"><span style="color:var(--text-muted);font-size:13px;">Canvas</span></div>
+  </div>
+</div>
+</section>
+
+<!-- ════════════════ 导入流程 ════════════════ -->
+<section class="demo-section">
+<h2>⑫ 导入流程</h2>
+<div class="imp-chat-wrap" style="max-width:500px;border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:12px;">
+  <div class="imp-msgs" style="min-height:80px;margin-bottom:8px;">
+    <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">上传图片后可开始处理</div>
+  </div>
+  <div class="imp-input">
+    <button class="imp-img-btn">🖼 3 张</button>
+    <div class="imp-inner">
+      <input placeholder="输入消息，或直接说"开始处理"" style="flex:1;padding:7px 12px;border:none;background:transparent;color:var(--text-primary);font-size:13px;font-family:inherit;outline:none;">
+      <button class="imp-send">发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- 导入步骤指示器 -->
+<div style="max-width:500px;margin-top:8px;">
+  <div style="display:flex;gap:4px;font-size:11px;">
+    <div style="flex:1;text-align:center;padding:3px 0;border-radius:4px;color:var(--success);">✓ 新建题组</div>
+    <div style="flex:1;text-align:center;padding:3px 0;border-radius:4px;background:var(--accent-soft);color:var(--accent);font-weight:600;">● 上传图片</div>
+    <div style="flex:1;text-align:center;padding:3px 0;border-radius:4px;color:var(--text-muted);">○ 导入对话</div>
+    <div style="flex:1;text-align:center;padding:3px 0;border-radius:4px;color:var(--text-muted);">○ 完成</div>
+  </div>
+</div>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简学</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<link rel="stylesheet" href="css/base.css?v=20260614e">
+<link rel="stylesheet" href="css/sidebar.css?v=20260614e">
+<link rel="stylesheet" href="css/components.css?v=20260614e">
+<link rel="stylesheet" href="css/panel.css?v=20260614e">
+<link rel="stylesheet" href="css/overlays.css?v=20260614e">
+<link rel="stylesheet" href="css/project-management.css?v=20260614e">
+<link rel="stylesheet" href="css/preference-preview.css?v=20260614a">
+<link rel="stylesheet" href="css/study-launcher.css?v=20260614e">
+<link rel="stylesheet" href="css/draw-view.css?v=20260614c">
+</head>
+<body>
+<div class="bg-layer"></div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="user-avatar" id="userAvatar">学</div>
+      <div class="user-name-wrap">
+        <div class="user-name" id="userName">加载中...</div>
+        <div class="user-status">学习上下文已连接</div>
+      </div>
+      <div style="flex:1;min-width:0"></div>
+      <div class="sb-menu-wrap">
+        <button class="sb-btn" id="userMenuBtn" title="账号">⋯</button>
+        <div class="sb-menu" id="userMenu">
+          <button class="sb-menu-item" id="logoutBtn">退出登录</button>
+        </div>
+      </div>
+      <button class="sb-btn" id="newSessionBtn" title="新建顺序做题">+</button>
+    </div>
+
+    <div class="sidebar-tabs">
+      <button class="sidebar-tab active" data-view="sessions">学习记录</button>
+      <button class="sidebar-tab" data-view="functions">功能入口</button>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="sidebar-view active" id="viewSessions">
+        <div class="session-list" id="sessionList">
+          <div class="sidebar-empty">正在加载...</div>
+        </div>
+      </div>
+      <div class="sidebar-view" id="viewFunctions">
+        <div class="func-list" id="funcList"></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="context-bar" id="contextBar">
+    <button class="sb-btn no-glow" id="sidebarToggle" title="切换侧边栏"></button>
+    <button class="sb-btn no-glow" id="backBtn" style="display:none" title="返回">←</button>
+    <div class="ctx-stack">
+      <div class="ctx-title" id="ctxTitle">简学</div>
+      <div class="ctx-meta" id="ctxMeta"></div>
+    </div>
+    <div class="ctx-spacer"></div>
+    <div class="ctx-actions" id="ctxActions"></div>
+  </div>
+
+  <main class="content-area" id="contentArea">
+    <div class="welcome" id="welcomeView">
+      <div class="welcome-kicker">Learning Workspace</div>
+      <h2>继续学习</h2>
+      <p>从左侧继续，或直接开始新一轮做题。</p>
+      <div class="shortcuts" id="shortcutList"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../api/client.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/icons.js"></script>
+<script src="FuncViewManager/ViewManager.js?v=20260614e"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/ChatView.js?v=20260615a"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/content-parser.js?v=20260614e"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/text.js?v=20260614b"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/raw.js?v=20260614b"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/preference-actions.js?v=3"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/collect-draft.js?v=3"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/summary.js?v=3"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/session-memory.js?v=20260616a"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/question.js?v=20260617a"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/types/ocr-batch.js?v=20260615a"></script>
+<script src="FuncViewManager/FuncViews/ChatView/ChatView/js/inputs/text.js?v=20260615a"></script>
+<script src="FuncViewManager/FuncViews/ChatView/Process/exercise/view.js?v=20260615a"></script>
+<script src="FuncViewManager/FuncViews/project-management.view.js?v=20260614e"></script>
+<script src="FuncViewManager/FuncViews/preference-preview.view.js?v=20260614a"></script>
+<script src="FuncViewManager/FuncViews/study-launcher.view.js?v=20260614d"></script>
+<script src="FuncViewManager/FuncViews/draw.view.js?v=20260615b"></script>
+<script>
+window.Shell = (function () {
+  'use strict';
+
+  var backBtn = document.getElementById('backBtn');
+  var ctxTitle = document.getElementById('ctxTitle');
+  var ctxMeta = document.getElementById('ctxMeta');
+  var ctxActions = document.getElementById('ctxActions');
+  var contentArea = document.getElementById('contentArea');
+  var welcome = document.getElementById('welcomeView');
+  var actionMount = null;
+  var panelOverlay = null;
+  var panelEl = null;
+  var panelOnClose = null;
+
+  function ensurePanel() {
+    if (panelOverlay && panelEl) return;
+    panelOverlay = document.createElement('div');
+    panelOverlay.className = 'panel-overlay';
+    panelOverlay.addEventListener('click', function () {
+      closePanel();
+    });
+    panelEl = document.createElement('aside');
+    panelEl.className = 'panel';
+    panelEl.innerHTML = ''
+      + '<div class="panel-header">'
+      + '  <button class="panel-back" data-close-panel="1">←</button>'
+      + '  <div class="panel-title"></div>'
+      + '  <button class="panel-close" data-close-panel="1">×</button>'
+      + '</div>'
+      + '<div class="panel-body"></div>';
+    panelEl.querySelectorAll('[data-close-panel="1"]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        closePanel();
+      });
+    });
+    document.body.appendChild(panelOverlay);
+    document.body.appendChild(panelEl);
+  }
+
+  function closePanel() {
+    if (!panelOverlay || !panelEl) return;
+    panelOverlay.classList.remove('open');
+    panelEl.classList.remove('open');
+    panelEl.className = 'panel';
+    var body = panelEl.querySelector('.panel-body');
+    if (body) body.innerHTML = '';
+    if (typeof panelOnClose === 'function') {
+      var handler = panelOnClose;
+      panelOnClose = null;
+      handler();
+    } else {
+      panelOnClose = null;
+    }
+  }
+
+  backBtn.addEventListener('click', function () {
+    if (typeof ViewManager !== 'undefined' && ViewManager.back) {
+      ViewManager.back();
+    }
+  });
+
+  function mountActions() {
+    if (typeof actionMount === 'function') {
+      actionMount(ctxActions);
+    }
+  }
+
+  return {
+    setTitle: function (html) {
+      ctxTitle.innerHTML = html || '简学';
+    },
+    setMeta: function (html) {
+      ctxMeta.innerHTML = html || '';
+      ctxMeta.style.display = html ? '' : 'none';
+    },
+    setActions: function (html, onMount) {
+      ctxActions.innerHTML = html || '';
+      actionMount = typeof onMount === 'function' ? onMount : null;
+      mountActions();
+    },
+    clearActions: function () {
+      ctxActions.innerHTML = '';
+      actionMount = null;
+    },
+    setContent: function (html) {
+      closePanel();
+      if (welcome) welcome.style.display = 'none';
+      contentArea.innerHTML = html || '';
+      mountActions();
+    },
+    openPanel: function (options) {
+      ensurePanel();
+      options = options || {};
+      panelEl.className = 'panel open' + (options.panelClass ? (' ' + options.panelClass) : '');
+      panelOverlay.className = 'panel-overlay open';
+      panelEl.querySelector('.panel-title').innerHTML = options.title || '';
+      var body = panelEl.querySelector('.panel-body');
+      body.innerHTML = options.bodyHtml || '';
+      panelOnClose = typeof options.onClose === 'function' ? options.onClose : null;
+      if (typeof options.onMount === 'function') {
+        options.onMount(body, panelEl);
+      }
+    },
+    closePanel: closePanel,
+    showBack: function () {
+      backBtn.style.display = '';
+    },
+    hideBack: function () {
+      backBtn.style.display = 'none';
+    }
+  };
+})();
+
+window.AppShell = (function () {
+  'use strict';
+
+  var SHELL_STATE_KEY = 'jx-shell-state-v2';
+  var profile = null;
+  var exerciseTarget = { bank_id: 2 };
+  var shellState = loadShellState();
+  var latestCatalog = { groups: [] };
+  var latestCatalogSignature = '';
+
+  function loadShellState() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(SHELL_STATE_KEY) || '{}');
+      return {
+        sidebarTab: parsed.sidebarTab || 'sessions',
+        openProjects: parsed.openProjects || {},
+        openBanks: parsed.openBanks || {},
+        autoOpenedSessionId: parsed.autoOpenedSessionId || null,
+      };
+    } catch (e) {
+      return { sidebarTab: 'sessions', openProjects: {}, openBanks: {}, autoOpenedSessionId: null };
+    }
+  }
+
+  function saveShellState() {
+    try {
+      localStorage.setItem(SHELL_STATE_KEY, JSON.stringify(shellState));
+    } catch (e) {}
+  }
+
+  function setSidebarTab(view) {
+    shellState.sidebarTab = view;
+    saveShellState();
+    document.querySelectorAll('.sidebar-tab').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.view === view);
+    });
+    document.querySelectorAll('.sidebar-view').forEach(function (el) {
+      el.classList.toggle('active', el.id === 'view' + view.replace(/^\w/, function (c) { return c.toUpperCase(); }));
+    });
+  }
+
+  function setProfile(data) {
+    profile = data || null;
+    var userName = document.getElementById('userName');
+    var userAvatar = document.getElementById('userAvatar');
+    var name = profile ? (profile.username || profile.name || ('用户' + profile.id)) : '未登录';
+    if (userName) userName.textContent = name;
+    if (userAvatar) userAvatar.textContent = name.slice(0, 1) || '学';
+  }
+
+  function setExerciseTarget(target) {
+    exerciseTarget = Object.assign({ bank_id: 2 }, target || {});
+  }
+
+  function getExerciseTarget() {
+    return Object.assign({}, exerciseTarget);
+  }
+
+  function fmtTime(ts) {
+    if (!ts) return '无记录';
+    try {
+      var d = new Date(ts);
+      if (isNaN(d.getTime())) return '无记录';
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      var hh = String(d.getHours()).padStart(2, '0');
+      var mi = String(d.getMinutes()).padStart(2, '0');
+      return mm + '-' + dd + ' ' + hh + ':' + mi;
+    } catch (e) {
+      return '无记录';
+    }
+  }
+
+  function truncateText(text, limit) {
+    text = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!text) return '未命名题目';
+    if (text.length <= limit) return text;
+    return text.slice(0, limit) + '...';
+  }
+
+  function renderMathSafe(text) {
+    return typeof renderMath === 'function' ? renderMath(esc(text || '')) : esc(text || '');
+  }
+
+  function getCurrentSessionId() {
+    try {
+      return new URL(location.href).searchParams.get('session_id');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function groupCatalog(groups) {
+    var projects = {};
+    (groups || []).forEach(function (group) {
+      var pid = String(group.project_id);
+      var bid = String(group.bank_id);
+      if (!projects[pid]) {
+        projects[pid] = {
+          project_id: group.project_id,
+          project_name: group.project_name || '未命名项目',
+          banks: {},
+        };
+      }
+      if (!projects[pid].banks[bid]) {
+        projects[pid].banks[bid] = {
+          bank_id: group.bank_id,
+          bank_name: group.bank_name || '未命名题库',
+          sessions: [],
+        };
+      }
+      projects[pid].banks[bid].sessions = projects[pid].banks[bid].sessions.concat(group.sessions || []);
+    });
+
+    return Object.keys(projects).sort(function (a, b) {
+      return projects[a].project_name.localeCompare(projects[b].project_name);
+    }).map(function (pid) {
+      var project = projects[pid];
+      project.banks = Object.keys(project.banks).sort(function (a, b) {
+        return project.banks[a].bank_name.localeCompare(project.banks[b].bank_name);
+      }).map(function (bid) {
+        var bank = project.banks[bid];
+        bank.sessions.sort(function (a, b) {
+          return String(b.completed_at || b.created_at || '').localeCompare(String(a.completed_at || a.created_at || ''));
+        });
+        return bank;
+      });
+      return project;
+    });
+  }
+
+  function ensureCurrentPathOpen(projects) {
+    var currentSessionId = getCurrentSessionId();
+    if (!currentSessionId) return;
+    if (String(shellState.autoOpenedSessionId || '') === String(currentSessionId)) return;
+    projects.forEach(function (project) {
+      project.banks.forEach(function (bank) {
+        var hasCurrent = bank.sessions.some(function (session) {
+          return String(session.session_id) === String(currentSessionId);
+        });
+        if (hasCurrent) {
+          shellState.openProjects[String(project.project_id)] = true;
+          shellState.openBanks[String(project.project_id) + '.' + String(bank.bank_id)] = true;
+        }
+      });
+    });
+    shellState.autoOpenedSessionId = String(currentSessionId);
+  }
+
+  function catalogSignature(catalog) {
+    var groups = catalog && catalog.groups ? catalog.groups : [];
+    return JSON.stringify(groups.map(function (group) {
+      return {
+        project_id: group.project_id,
+        bank_id: group.bank_id,
+        sessions: (group.sessions || []).map(function (session) {
+          return [
+            session.session_id,
+            session.created_at || '',
+            session.completed_at || '',
+            session.group_name || '',
+            session.question_content || ''
+          ];
+        })
+      };
+    }));
+  }
+
+  function setSidebarCaret(button, open) {
+    if (!button) return;
+    var caret = button.querySelector('.sb-caret');
+    if (caret) caret.textContent = open ? '▾' : '▸';
+  }
+
+  function setSidebarSectionOpen(section, open, toggleSelector) {
+    if (!section) return;
+    section.classList.toggle('open', !!open);
+    setSidebarCaret(section.querySelector(toggleSelector), !!open);
+  }
+
+  function applySidebarState(list) {
+    list = list || document.getElementById('sessionList');
+    if (!list) return;
+    list.querySelectorAll('.sb-project').forEach(function (section) {
+      var key = String(section.getAttribute('data-project') || '');
+      setSidebarSectionOpen(section, !!shellState.openProjects[key], '[data-toggle-project]');
+    });
+    list.querySelectorAll('.sb-bank').forEach(function (section) {
+      var key = String(section.getAttribute('data-bank') || '');
+      setSidebarSectionOpen(section, !!shellState.openBanks[key], '[data-toggle-bank]');
+    });
+    var current = String(getCurrentSessionId() || '');
+    list.querySelectorAll('.session-item').forEach(function (item) {
+      item.classList.toggle('active', String(item.getAttribute('data-session-id') || '') === current);
+    });
+  }
+
+  function sessionItemHtml(session) {
+    var active = String(getCurrentSessionId() || '') === String(session.session_id);
+    var title = renderMathSafe(truncateText(session.question_content, 58));
+    return ''
+      + '<button class="session-item' + (active ? ' active' : '') + '" data-session-id="' + session.session_id + '" data-route="exercise">'
+      + '  <span class="s-dot"></span>'
+      + '  <span class="s-main">'
+      + '    <span class="s-title">' + title + '</span>'
+      + '    <span class="s-meta">' + esc(session.group_name || '未命名题组') + ' · ' + esc(fmtTime(session.completed_at || session.created_at)) + '</span>'
+      + '  </span>'
+      + '</button>';
+  }
+
+  function updateBankMeta(bankSection) {
+    if (!bankSection) return;
+    var items = Array.prototype.slice.call(bankSection.querySelectorAll('.session-item'));
+    var meta = bankSection.querySelector('.sb-bank-meta');
+    if (!meta || !items.length) return;
+    var firstMeta = items[0].querySelector('.s-meta');
+    var latestText = '';
+    if (firstMeta) {
+      var parts = String(firstMeta.textContent || '').split('·');
+      latestText = parts.length > 1 ? parts[parts.length - 1].trim() : '';
+    }
+    meta.textContent = items.length + ' 条记录 · 最近 ' + latestText;
+  }
+
+  function updateProjectMeta(projectSection) {
+    if (!projectSection) return;
+    var banks = projectSection.querySelectorAll('.sb-bank');
+    var sessionCount = projectSection.querySelectorAll('.session-item').length;
+    var meta = projectSection.querySelector('.sb-project-meta');
+    if (meta) meta.textContent = banks.length + ' 个题库 · ' + sessionCount + ' 条记录';
+  }
+
+  function upsertSessionItem(session) {
+    if (!session) return false;
+    var list = document.getElementById('sessionList');
+    if (!list) return false;
+    var bankKey = String(session.project_id) + '.' + String(session.bank_id);
+    var selector = '.sb-bank[data-bank="' + bankKey.replace(/"/g, '\\"') + '"]';
+    var bankSection = list.querySelector(selector);
+    if (!bankSection) return false;
+    var projectSection = bankSection.closest('.sb-project');
+    var bankBody = bankSection.querySelector('.sb-bank-body');
+    if (!bankBody) return false;
+
+    if (projectSection) {
+      shellState.openProjects[String(session.project_id)] = true;
+      setSidebarSectionOpen(projectSection, true, '[data-toggle-project]');
+    }
+    shellState.openBanks[bankKey] = true;
+    setSidebarSectionOpen(bankSection, true, '[data-toggle-bank]');
+
+    var existing = bankBody.querySelector('.session-item[data-session-id="' + session.session_id + '"]');
+    if (existing) existing.remove();
+    bankBody.insertAdjacentHTML('afterbegin', sessionItemHtml(session));
+    updateBankMeta(bankSection);
+    updateProjectMeta(projectSection);
+    applySidebarState(list);
+    saveShellState();
+    return true;
+  }
+
+  function bindSessionCatalog(list) {
+    if (!list || list.dataset.bound === '1') return;
+    list.dataset.bound = '1';
+    list.addEventListener('click', function (event) {
+      var projectToggle = event.target.closest('[data-toggle-project]');
+      if (projectToggle && list.contains(projectToggle)) {
+        var projectKey = String(projectToggle.getAttribute('data-toggle-project'));
+        shellState.openProjects[projectKey] = !shellState.openProjects[projectKey];
+        saveShellState();
+        setSidebarSectionOpen(projectToggle.closest('.sb-project'), !!shellState.openProjects[projectKey], '[data-toggle-project]');
+        return;
+      }
+
+      var bankToggle = event.target.closest('[data-toggle-bank]');
+      if (bankToggle && list.contains(bankToggle)) {
+        var bankKey = String(bankToggle.getAttribute('data-toggle-bank'));
+        shellState.openBanks[bankKey] = !shellState.openBanks[bankKey];
+        saveShellState();
+        setSidebarSectionOpen(bankToggle.closest('.sb-bank'), !!shellState.openBanks[bankKey], '[data-toggle-bank]');
+        return;
+      }
+
+      var sessionItem = event.target.closest('[data-session-id]');
+      if (sessionItem && list.contains(sessionItem)) {
+        openSession(sessionItem.getAttribute('data-session-id'), 'exercise');
+      }
+    });
+  }
+
+  function renderSessionCatalog(catalog) {
+    var list = document.getElementById('sessionList');
+    if (!list) return;
+    var groups = catalog && catalog.groups ? catalog.groups : [];
+    latestCatalog = { groups: groups };
+    latestCatalogSignature = catalogSignature(latestCatalog);
+    bindSessionCatalog(list);
+    latestCatalogSignature = catalogSignature(latestCatalog);
+    bindSessionCatalog(list);
+    if (!groups.length) {
+      list.innerHTML = '<div class="sidebar-empty">还没有顺序做题记录</div>';
+      return;
+    }
+
+    var projects = groupCatalog(groups);
+    ensureCurrentPathOpen(projects);
+    saveShellState();
+
+    list.innerHTML = projects.map(function (project) {
+      var projectOpen = !!shellState.openProjects[String(project.project_id)];
+      var projectSessionCount = project.banks.reduce(function (sum, bank) { return sum + bank.sessions.length; }, 0);
+      return ''
+        + '<section class="sb-project' + (projectOpen ? ' open' : '') + '" data-project="' + project.project_id + '">'
+        + '  <button class="sb-project-head" data-toggle-project="' + project.project_id + '">'
+        + '    <span class="sb-caret">' + (projectOpen ? '▾' : '▸') + '</span>'
+        + '    <span class="sb-project-main">'
+        + '      <span class="sb-project-name">' + esc(project.project_name) + '</span>'
+        + '      <span class="sb-project-meta">' + project.banks.length + ' 个题库 · ' + projectSessionCount + ' 条记录</span>'
+        + '    </span>'
+        + '  </button>'
+        + '  <div class="sb-project-body">'
+        +      project.banks.map(function (bank) {
+          var bankKey = String(project.project_id) + '.' + String(bank.bank_id);
+          var bankOpen = !!shellState.openBanks[bankKey];
+          var latestSession = bank.sessions[0] || null;
+          return ''
+            + '<section class="sb-bank' + (bankOpen ? ' open' : '') + '" data-bank="' + bankKey + '">'
+            + '  <button class="sb-bank-head" data-toggle-bank="' + bankKey + '">'
+            + '    <span class="sb-caret">' + (bankOpen ? '▾' : '▸') + '</span>'
+            + '    <span class="sb-bank-main">'
+            + '      <span class="sb-bank-name">' + esc(bank.bank_name) + '</span>'
+            + '      <span class="sb-bank-meta">' + bank.sessions.length + ' 条记录 · 最近 ' + esc(fmtTime(latestSession ? (latestSession.completed_at || latestSession.created_at) : null)) + '</span>'
+            + '    </span>'
+            + '  </button>'
+            + '  <div class="sb-bank-body">'
+            +      bank.sessions.map(function (session) {
+              var active = String(getCurrentSessionId() || '') === String(session.session_id);
+              var title = renderMathSafe(truncateText(session.question_content, 58));
+              return ''
+                + '<button class="session-item' + (active ? ' active' : '') + '" data-session-id="' + session.session_id + '" data-route="exercise">'
+                + '  <span class="s-dot"></span>'
+                + '  <span class="s-main">'
+                + '    <span class="s-title">' + title + '</span>'
+                + '    <span class="s-meta">' + esc(session.group_name || '未命名题组') + ' · ' + esc(fmtTime(session.completed_at || session.created_at)) + '</span>'
+                + '  </span>'
+                + '</button>';
+            }).join('')
+            + '  </div>'
+            + '</section>';
+        }).join('')
+        + '  </div>'
+        + '</section>';
+    }).join('');
+
+    applySidebarState(list);
+
+    if (typeof renderAll === 'function') {
+      requestAnimationFrame(function () { renderAll(list); });
+    }
+  }
+
+  function renderSessionPreview(sessionData, titleText) {
+    var messages = sessionData.messages || [];
+    var filtered = messages.filter(function (m) {
+      return ChatView.isVisibleMessage(m);
+    });
+
+    var bodyHtml = filtered.map(function (m) {
+      var roleCls = m.role === 'user' ? 'user' : (m.role === 'system' ? 'system' : 'ai');
+      var content = typeof m.content === 'string' ? m.content : '';
+      if (m.role === 'assistant') {
+        var segs = ChatView.parseAssistantContent(content);
+        var inner = segs.map(function (seg) {
+          if (seg.type === 'text') return '<div class="msg-bubble">' + esc(seg.content) + '</div>';
+          if (seg.type === 'card') {
+            var def = ChatView.getType(seg.data.type);
+            if (def) {
+              var rendered = def.render(seg.data);
+              return rendered && rendered.html ? '<div class="ro-card-wrap">' + rendered.html + '</div>' : '';
+            }
+          }
+          return '';
+        }).join('');
+        return '<div class="msg ai">' + inner + '</div>';
+      }
+      return '<div class="msg ' + roleCls + '"><div class="msg-bubble">' + esc(content) + '</div></div>';
+    }).join('');
+
+    var html = ''
+      + '<div class="readonly-session">'
+      + '  <div class="readonly-session-head">'
+      + '    <button class="sb-btn no-glow" id="roBackBtn" style="width:28px;height:28px;font-size:14px;">←</button>'
+      + '    <span class="readonly-session-title">只读预览 · ' + esc(titleText || '') + '</span>'
+      + '  </div>'
+      + '  <div class="chat-area" style="flex:1;overflow:auto;padding:14px;">'
+      + '    <div class="messages">' + bodyHtml + '</div>'
+      + '  </div>'
+      + '</div>';
+    Shell.setContent(html);
+    Shell.setMeta('');
+    Shell.clearActions();
+    var backBtn = document.getElementById('roBackBtn');
+    if (backBtn) {
+      backBtn.addEventListener('click', function () {
+        openExercise(Object.assign(getExerciseTarget(), { _forceNew: true }));
+      });
+    }
+    if (typeof renderAll === 'function') {
+      requestAnimationFrame(function () { renderAll(document.querySelector('.readonly-session')); });
+    }
+  }
+
+  function openExercise(payload) {
+    if (!window._exerciseView) return;
+    var next = Object.assign({}, getExerciseTarget(), payload || {});
+    setExerciseTarget(next);
+    ViewManager.show(window._exerciseView, next);
+  }
+
+  function openProjectManagement() {
+    if (!window._projectManagementView) return;
+    ViewManager.show(window._projectManagementView, { view: 'project-management' });
+  }
+
+  function openPreferencePreview() {
+    if (!window._preferencePreviewView) return;
+    ViewManager.show(window._preferencePreviewView, { view: 'preference-preview' });
+  }
+
+  function openSession(sessionId, route) {
+    api.query('session.get', { id: parseInt(sessionId, 10) || sessionId }).then(function (data) {
+      if (!data || !data.messages) return;
+      try {
+        var url = new URL(location.href);
+        url.searchParams.set('session_id', sessionId);
+        history.pushState({}, '', url);
+      } catch (e) {}
+      if (route === 'exercise') {
+        openExercise({ session_id: parseInt(sessionId, 10) || sessionId });
+      } else {
+        renderSessionPreview(data, '#' + sessionId);
+      }
+      applySidebarState();
+    }).catch(function (err) {
+      console.warn('[AppShell] session.get failed', err);
+    });
+  }
+
+  function loadSessions(options) {
+    var list = document.getElementById('sessionList');
+    if (!list) return Promise.resolve();
+    options = options || {};
+    var silent = !!options.silent;
+    var hasContent = !!(list.children && list.children.length);
+    if (!silent || !hasContent) {
+      list.innerHTML = '<div class="sidebar-empty">正在加载...</div>';
+    }
+    return api.query('session.catalog', {}).then(function (data) {
+      if (data && data.ok === false) {
+        list.innerHTML = '<div class="sidebar-empty error">读取会话失败</div>';
+        return;
+      }
+      var nextCatalog = data || { groups: [] };
+      var nextSignature = catalogSignature(nextCatalog);
+      var hadCatalog = !!(latestCatalog && latestCatalog.groups && latestCatalog.groups.length);
+      if (silent && hasContent && hadCatalog && nextSignature === latestCatalogSignature) {
+        latestCatalog = nextCatalog;
+        ensureCurrentPathOpen(groupCatalog(nextCatalog.groups || []));
+        saveShellState();
+        applySidebarState(list);
+        return;
+      }
+      renderSessionCatalog(nextCatalog);
+    }).catch(function (err) {
+      list.innerHTML = '<div class="sidebar-empty error">读取会话失败</div>';
+      console.warn('[AppShell] session.catalog failed', err);
+    });
+  }
+
+  function renderFunctionList() {
+    var items = [
+      { label: '项目管理', desc: '管理项目、题库和题目。', icon: '▣', action: 'project' },
+      { label: '顺序做题', desc: '继续做题，或开始新一轮练习。', icon: '→', action: 'exercise' }
+    ];
+    var funcList = document.getElementById('funcList');
+    var shortcutList = document.getElementById('shortcutList');
+    if (funcList) {
+      funcList.innerHTML = items.map(function (item) {
+        return ''
+          + '<button class="func-item" data-action="' + item.action + '">'
+          + '  <span class="f-icon">' + item.icon + '</span>'
+          + '  <span class="f-info">'
+          + '    <span class="f-title">' + item.label + '</span>'
+          + '    <span class="f-desc">' + item.desc + '</span>'
+          + '  </span>'
+          + '</button>';
+      }).join('');
+      funcList.querySelectorAll('[data-action]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var action = el.getAttribute('data-action');
+          if (action === 'project') openProjectManagement();
+          if (action === 'exercise') openExercise(Object.assign(getExerciseTarget(), { _forceNew: true }));
+        });
+      });
+    }
+    if (shortcutList) {
+      shortcutList.innerHTML = items.map(function (item) {
+        return '<button class="shortcut-btn" data-action="' + item.action + '">' + item.label + '</button>';
+      }).join('');
+      shortcutList.querySelectorAll('[data-action]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var action = el.getAttribute('data-action');
+          if (action === 'project') openProjectManagement();
+          if (action === 'exercise') openExercise(Object.assign(getExerciseTarget(), { _forceNew: true }));
+        });
+      });
+    }
+  }
+
+  async function ensureLogin() {
+    var data = await api.me();
+    if (!data || !data.ok) {
+      location.href = '/test/login.html';
+      return false;
+    }
+    setProfile(data.data || {});
+    return true;
+  }
+
+  function bindChrome() {
+    var sidebarToggle = document.getElementById('sidebarToggle');
+    var newSessionBtn = document.getElementById('newSessionBtn');
+    var userMenuBtn = document.getElementById('userMenuBtn');
+    var userMenu = document.getElementById('userMenu');
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (sidebarToggle && window.Icon) sidebarToggle.innerHTML = Icon.menu(16);
+    if (newSessionBtn && window.Icon) newSessionBtn.innerHTML = Icon.plus(16);
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+      });
+    }
+
+    if (newSessionBtn) {
+      newSessionBtn.addEventListener('click', function () {
+        try {
+          var url = new URL(location.href);
+          url.searchParams.delete('session_id');
+          history.pushState({}, '', url);
+        } catch (e) {}
+        shellState.autoOpenedSessionId = null;
+        saveShellState();
+        openExercise(Object.assign(getExerciseTarget(), { _forceNew: true }));
+        loadSessions({ silent: true });
+      });
+    }
+
+    if (userMenuBtn) {
+      userMenuBtn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        if (userMenu) userMenu.classList.toggle('open');
+      });
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async function (event) {
+        event.stopPropagation();
+        if (userMenu) userMenu.classList.remove('open');
+        await fetch('/api/auth/logout', { method: 'POST' }).catch(function () {});
+        location.href = '/test/login.html';
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      if (!userMenu || !userMenuBtn) return;
+      if (userMenuBtn.contains(event.target)) return;
+      if (userMenu.contains(event.target)) return;
+      userMenu.classList.remove('open');
+    });
+
+    document.querySelectorAll('.sidebar-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setSidebarTab(btn.dataset.view);
+      });
+    });
+    setSidebarTab(shellState.sidebarTab || 'sessions');
+  }
+
+  function bootstrapInitialView() {
+    var sid = null;
+    try {
+      sid = new URL(location.href).searchParams.get('session_id');
+    } catch (e) {}
+    if (!sid) {
+      shellState.autoOpenedSessionId = null;
+      saveShellState();
+    }
+    if (sid) {
+      openExercise({ session_id: parseInt(sid, 10) || sid });
+    }
+  }
+
+  return {
+    ensureLogin: ensureLogin,
+    bindChrome: bindChrome,
+    renderFunctionList: renderFunctionList,
+    loadSessions: loadSessions,
+    openExercise: openExercise,
+    openProjectManagement: openProjectManagement,
+    openSession: openSession,
+    upsertSessionItem: upsertSessionItem,
+    bootstrapInitialView: bootstrapInitialView,
+    setProfile: setProfile,
+    setExerciseTarget: setExerciseTarget,
+    getExerciseTarget: getExerciseTarget,
+    setSidebarTab: setSidebarTab,
+  };
+})();
+
+document.addEventListener('DOMContentLoaded', async function () {
+  if (!(await AppShell.ensureLogin())) return;
+  AppShell.bindChrome();
+  AppShell.renderFunctionList();
+  await AppShell.loadSessions();
+  AppShell.bootstrapInitialView();
+  window._reloadSessions = AppShell.loadSessions;
+});
+</script>
+<script src="app-shell.launcher.js?v=20260614b"></script>
+<script src="app-shell.preference.js?v=20260614a"></script>
+</body>
+</html>

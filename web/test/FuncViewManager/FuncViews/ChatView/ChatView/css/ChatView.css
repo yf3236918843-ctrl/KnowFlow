@@ -1,0 +1,96 @@
+.chat-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.chat-banner {
+  flex-shrink: 0;
+  padding: 0 20px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.qn-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 68px;
+  max-width: 760px;
+  margin: 10px auto 0;
+  padding: 0;
+  border-radius: 18px;
+}
+
+.qn-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 54px;
+  padding: 10px 18px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: center;
+  cursor: pointer;
+  box-shadow: none;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.qn-card:hover {
+  border-color: rgba(255, 255, 255, 0.04);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), rgba(255, 255, 255, 0.008));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.qn-card:active {
+  transform: translateY(1px) scale(0.996);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.034), rgba(255, 255, 255, 0.014));
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.qn-card:focus-visible {
+  outline: none;
+  border-color: rgba(102, 163, 255, 0.56);
+  box-shadow: 0 0 0 3px rgba(102, 163, 255, 0.12);
+}
+
+.qn-card .katex {
+  font-size: calc(var(--katex-size) * 2);
+}
+
+.qn-summary {
+  color: var(--text-primary);
+  font-size: 9px;
+  line-height: 1.36;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.7em;
+  overflow: hidden;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.qn-summary .katex-display {
+  margin: 0;
+  overflow: hidden;
+}
+
+.qn-summary > * {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

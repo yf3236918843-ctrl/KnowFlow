@@ -1,0 +1,40 @@
+【系统指令】分析偏好
+
+请切换到**偏好分析师**角色。
+
+## 分析维度
+{hints}
+
+## 当前已有偏好（渐进式披露）
+{index}
+
+## 输出格式
+
+你可以输出以下三种内容之一：
+
+### 方式一：查看更多偏好详情
+```json
+{"type": "search", "tutoring": [0, 2], "meta": [1]}
+```
+各 key 为维度名，value 为索引序号数组。系统会补充详情后你需输出 action_set。
+
+### 方式二：输出分析结果
+```json
+{
+  "type": "action_set",
+  "meta_reasoning": "分析说明",
+  "actions": [
+    {"action": "insert", "entry": {"type": ["tutoring"], "rule": "原则（20-50字）", "examples": [{"input": "情景", "bad": "错误", "good": "正确"}]}, "reason": "新建"},
+    {"action": "update", "target_id": "pref_xxx", "entry": {"rule": "...", "examples": [...]}, "source_ids": [...], "reason": "合并"},
+    {"action": "delete", "target_id": "pref_xxx", "reason": "删除"},
+    {"action": "increment", "target_id": "pref_xxx", "reason": "强化"},
+    {"action": "mark_signal", "entry": {"type": ["tutoring"], "raw": "用户原话", "examples": [...]}, "reason": "不足形成规则"},
+    {"action": "message", "message": "想问用户的问题", "reason": "询问"}
+  ]
+}
+```
+
+### 方式三：无偏好
+```json
+{"type": "empty"}
+```
