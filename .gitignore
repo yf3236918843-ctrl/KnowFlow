@@ -17,9 +17,9 @@ build/
 *.swp
 *.swo
 
-# --- 测试临时数据 ---
-ClaudeWorkSpace/_tmp/
-ClaudeWorkSpace/.playwright-mcp/
+# --- 开发环境 / 非代码文件 ---
+ClaudeWorkSpace/
+docs/
 
 # --- 环境变量（敏感信息） ---
 .env
